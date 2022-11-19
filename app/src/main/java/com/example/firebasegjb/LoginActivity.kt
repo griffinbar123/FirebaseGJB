@@ -1,119 +1,106 @@
-package com.example.firebasegjb;
+package com.example.firebasegjb
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.EditText
+import android.widget.ProgressBar
+import com.google.firebase.auth.FirebaseAuth
+import android.os.Bundle
+import com.example.firebasegjb.R
+import android.text.TextUtils
+import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import android.content.Intent
+import android.view.View
+import android.widget.Button
+import com.example.firebasegjb.MainActivity
 
-import android.os.Bundle;
-import android.content.Intent;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Button;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.AuthResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-public class LoginActivity extends AppCompatActivity {
-
-    private EditText emailTextView, passwordTextView;
-    private Button Btn;
-    private ProgressBar progressbar;
-
-    private FirebaseAuth mAuth;
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+class LoginActivity : AppCompatActivity() {
+    private var emailTextView: EditText? = null
+    private var passwordTextView: EditText? = null
+    private var Btn: Button? = null
+    private var progressbar: ProgressBar? = null
+    private var mAuth: FirebaseAuth? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
         // taking instance of FirebaseAuth
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance()
 
         // initialising all views through id defined above
-        emailTextView = findViewById(R.id.email);
-        passwordTextView = findViewById(R.id.password);
-        Btn = findViewById(R.id.login);
-        progressbar = findViewById(R.id.progressBar);
+        emailTextView = findViewById(R.id.email)
+        passwordTextView = findViewById(R.id.password)
+        Btn = findViewById(R.id.login)
+        progressbar = findViewById(R.id.progressBar)
 
         // Set on Click Listener on Sign-in button
-        Btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                loginUserAccount();
-            }
-        });
     }
 
-    private void loginUserAccount()
-    {
+    public fun loginUserAccount(view:View) {
 
         // show the visibility of progress bar to show loading
-        progressbar.setVisibility(View.VISIBLE);
+        progressbar!!.visibility = View.VISIBLE
 
         // Take the value of two edit texts in Strings
-        String email, password;
-        email = emailTextView.getText().toString();
-        password = passwordTextView.getText().toString();
+        val email: String
+        val password: String
+        email = emailTextView!!.text.toString()
+        password = passwordTextView!!.text.toString()
 
         // validations for input email and password
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(),
-                            "Please enter email!!",
-                            Toast.LENGTH_LONG)
-                    .show();
-            return;
+            Toast.makeText(
+                applicationContext,
+                "Please enter email!!",
+                Toast.LENGTH_LONG
+            )
+                .show()
+            return
         }
-
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(),
-                            "Please enter password!!",
-                            Toast.LENGTH_LONG)
-                    .show();
-            return;
+            Toast.makeText(
+                applicationContext,
+                "Please enter password!!",
+                Toast.LENGTH_LONG
+            )
+                .show()
+            return
         }
 
         // signin existing user
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(
-                        new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(
-                                    @NonNull Task<AuthResult> task)
-                            {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(),
-                                                    "Login successful!!",
-                                                    Toast.LENGTH_LONG)
-                                            .show();
+        mAuth!!.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Login successful!!",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
 
-                                    // hide the progress bar
-                                    progressbar.setVisibility(View.GONE);
+                    // hide the progress bar
+                    progressbar!!.visibility = View.GONE
 
-                                    // if sign-in is successful
-                                    // intent to home activity
-                                    Intent intent
-                                            = new Intent(LoginActivity.this,
-                                            MainActivity.class);
-                                    startActivity(intent);
-                                }
+                    // if sign-in is successful
+                    // intent to home activity
+                    val intent = Intent(
+                        this@LoginActivity,
+                        MainActivity::class.java
+                    )
+                    startActivity(intent)
+                } else {
 
-                                else {
+                    // sign-in failed
+                    Toast.makeText(
+                        applicationContext,
+                        "Login failed!!",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
 
-                                    // sign-in failed
-                                    Toast.makeText(getApplicationContext(),
-                                                    "Login failed!!",
-                                                    Toast.LENGTH_LONG)
-                                            .show();
-
-                                    // hide the progress bar
-                                    progressbar.setVisibility(View.GONE);
-                                }
-                            }
-                        });
+                    // hide the progress bar
+                    progressbar!!.visibility = View.GONE
+                }
+            }
     }
 }
